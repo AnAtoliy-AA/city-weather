@@ -14,7 +14,8 @@ const ACTION_CONST = {
 let initialState = {
   cityList: [],
   cityInfoList: [
-    {name: ''},
+    {name: '',
+  id: ''},
   ]
 };
 
@@ -47,7 +48,7 @@ let initialState = {
 
 
 
-const cityListReducer = (state = initialState, action: any) => {
+const cityInfoListReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case ACTION_CONST.SET_CITIES_INFO: {
       return { ...state, cityInfoList: action.cityInfoList };
@@ -62,7 +63,10 @@ const cityListReducer = (state = initialState, action: any) => {
       return { ...state, cityInfoList: [...action.cityInfoList] }
     }
     case ACTION_CONST.UPDATE_CITY_INFO: {
-      return { ...state, cityInfoList: state.cityInfoList.filter(c => c.name !== action.cityInfo) }
+     const index = state.cityInfoList.findIndex(el => el.id === action.cityInfo.id);
+     const newCityList = state.cityInfoList.slice();
+     newCityList.splice(index, 1, action.cityInfo);
+      return { ...state, cityInfoList: [...newCityList] }
     }
     case ACTION_CONST.SET_CITIES_LIST: {
       return { ...state, cityList: action.cityInfoList }
@@ -91,6 +95,10 @@ export const removeCityFromInfoList = (cityInfo: any) => ({
   type: ACTION_CONST.REMOVE_ACTIVE_CITY_INFO,
   cityInfo,
 });
+export const updateCityInInfoList = (cityInfo: any) => ({
+  type: ACTION_CONST.UPDATE_CITY_INFO,
+  cityInfo,
+});
 
 export const updateAllCitiesInfo = (cityInfoList: any) => ({
   type: ACTION_CONST.UPDATE_ALL_CITIES_INFO,
@@ -107,6 +115,17 @@ export const getCityWeather = (cityName: string) => async (dispatch: any) => {
   dispatch(addCityToInfoList(response));
 }
 
+export const updateCityWeather = (cityName: string) => async (dispatch: any) => {
+  const response = await weatherApi.getWeather(cityName);
+
+  dispatch(updateCityInInfoList(response));
+}
+
+export const getAllCityWeather = (citiesNames: []) => async (dispatch: any) => {
+  const response = await weatherApi.getAllCitiesWeather(citiesNames);
+
+  dispatch(updateAllCitiesInfo(response));
+}
 
 
-export default cityListReducer;
+export default cityInfoListReducer;

@@ -7,7 +7,7 @@ import {
 } from "../api/api-keys/WeatherApiKey";
 // import { LOCAL_STORAGE_NAME_CITY, loadState, saveState } from "../utils";
 import React, { useState } from "react";
-import { addCity, addCityToInfoList, getCityWeather, updateAllCitiesInfo } from "../../src/store/cityInfoList-reducer";
+import { addCity, addCityToInfoList, getAllCityWeather, getCityWeather } from "../../src/store/cityInfoList-reducer";
 
 // import { addCity } from "../../src/store/cityList-reducer";
 import axios from "axios";
@@ -19,22 +19,7 @@ const SearchForm = (props: any) => {
   const [autoCompleteArray, setAutoCompleteArray] = useState([]);
 
   const updateAllCitiesWeather = () => {
-    const urlArray: string[] = [];
-    const cityNames = props.cityList;
-
-    for (let name of cityNames) {
-      urlArray.push(
-        `${WEATHER_API}${name}&appid=${WEATHER_API_KEY}&units=metric`
-      );
-    }
-
-    let promiseArray = urlArray.map((url) => axios.get(url));
-
-    axios.all(promiseArray).then((results) => {
-      let temp = results.map((r) => r.data);
-      props.updateAllCitiesInfo(temp);
-      console.log("TEMP", temp);
-    });
+    props.getAllCityWeather(props.cityList)
   };
 
   const getAutocompleteCity = (value: string) => {
@@ -156,5 +141,5 @@ export default connect(mapStateToProps, {
   addCity,
   addCityToInfoList,
   getCityWeather,
-  updateAllCitiesInfo,
+  getAllCityWeather
 })(SearchForm);
