@@ -1,6 +1,6 @@
 import "./SearchForm.scss";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   addCityToInfoList,
   getAllCityWeather,
@@ -18,6 +18,18 @@ const MIN_SEARCH_VALUE = 2;
 
 const SearchForm = (props: any) => {
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    let interval: number | undefined;
+
+    interval = window.setInterval(() => {
+      props.getAllCityWeather(props.cityList);
+    }, 10000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [props, props.cityList]);
 
   const updateAllCitiesWeather = () => {
     props.getAllCityWeather(props.cityList);
@@ -64,9 +76,9 @@ const SearchForm = (props: any) => {
               className="form__input"
             />
             <div className="autocomplete__fields">
-              {props.autoCompleteInfo.map((city: any) => {
+              {props.autoCompleteInfo.map((city: string) => {
                 return (
-                  <div onClick={() => handleAutoCompleteClick(city)}>
+                  <div key={city} onClick={() => handleAutoCompleteClick(city)}>
                     {city}
                   </div>
                 );
