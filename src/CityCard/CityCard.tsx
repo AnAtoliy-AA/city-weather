@@ -17,6 +17,7 @@ const CityCard = (props: any) => {
       <p>{props.city.wind.speed}</p>
       <span style={{ transform: `rotate(${props.city.wind.deg}deg)` }}>&#10224;</span>
       <button onClick={() => props.handleDeleteButton(props.city.name)}>delete</button>
+      <button onClick={() => props.handleUpdateButton(props.city.name)}>update</button>
       <Moment unix format="D MMMM YYYY HH:MM:SS">
         {props.city.dt}
       </Moment>

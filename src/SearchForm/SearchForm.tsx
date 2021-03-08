@@ -8,9 +8,12 @@ import {
 import { LOCAL_STORAGE_NAME_CITY, loadState, saveState } from "../utils";
 import React, { useState } from "react";
 
+import {addCity} from '../../src/store/cityList-reducer';
+import {addCityToInfoList} from '../../src/store/cityInfoList-reducer'
 import axios from "axios";
+import { connect } from 'react-redux';
 
-const SearchForm = () => {
+const SearchForm = (props:any) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [autoCompleteArray, setAutoCompleteArray] = useState([]);
@@ -27,6 +30,24 @@ const SearchForm = () => {
       saveState([], LOCAL_STORAGE_NAME_CITY);
     }
   };
+
+  const updateAllCitiesWeather = () => {
+    const urlArray: any[] = [];
+    const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
+
+    for(let name of cityNames) {
+      urlArray.push(`${WEATHER_API}${name}&appid=${WEATHER_API_KEY}&units=metric`);
+    }
+
+    let promiseArray = urlArray.map(url => axios.get(url));
+
+    axios.all(promiseArray)
+    .then(results => {
+      let temp = results.map(r => r.data);
+      saveState(temp);
+      console.log("TEMP", temp);
+    })
+  }
 
   const getAutocompleteCity = (value: string) => {
     axios
@@ -66,13 +87,15 @@ const getWeatherFromApi = (value: string) => {
       response.data.name
     );
     if (!isCountryExistInTracking) {
-      const countriesInfo = loadState();
-      const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
-      saveState(
-        [...cityNames, response.data.name],
-        LOCAL_STORAGE_NAME_CITY
-      );
-      saveState([...countriesInfo, response.data]);
+      // const countriesInfo = loadState();
+      // const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
+      // saveState(
+      //   [...cityNames, response.data.name],
+      //   LOCAL_STORAGE_NAME_CITY
+      // );
+      // saveState([...countriesInfo, response.data]);
+      props.addCity(response.data.name);
+      props.addCityToInfoList(response.data);
     }
   })
   .catch((er) => {
@@ -88,6 +111,7 @@ const getWeatherFromApi = (value: string) => {
   const handleAutoCompleteClick = (value: string) => {
     const searchCity = value.split(',')[0];
     setSearchTerm('');
+    setAutoCompleteArray([]);
 
     getWeatherFromApi(searchCity);
   }
@@ -114,18 +138,25 @@ const getWeatherFromApi = (value: string) => {
             </div>
           </label>
         </div>
-        {/* <p>
-          <input type="submit" value="Submit" />
-        </p> */}
-        {/* <select>
-          {(autoCompleteArray.length > 0 )&&  autoCompleteArray.map((city: any) => {
-            return <option>{city.matching_full_name}</option>
-          })}
-        </select> */}
       </form>
+      <button onClick={updateAllCitiesWeather}>UpdateAll</button>
       <div className="error-message">{errorMessage}</div>
     </div>
   );
 };
 
-export default SearchForm;
+let mapStateToProps = (state: {
+  cityList: {  cityList: any};
+  cityInfoList: {cityInfoList: any,}
+}) => {
+  return {
+    cityInfoList: state.cityInfoList.cityInfoList,
+    cityList: state.cityList.cityList
+  };
+};
+
+export default connect(mapStateToProps, {
+  addCity,
+  addCityToInfoList
+})(SearchForm);
+
