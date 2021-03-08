@@ -2,47 +2,19 @@ import "./CardsContainer.scss";
 
 import { LOCAL_STORAGE_NAME_CITY, loadState, saveState } from "../utils";
 import React, { useCallback, useEffect, useState } from "react";
-import { WEATHER_API, WEATHER_API_KEY } from "../api-keys/WeatherApiKey";
+import { WEATHER_API, WEATHER_API_KEY } from "../api/api-keys/WeatherApiKey";
+import {removeActiveCity, removeCityFromInfoList, setCityInfoList} from '../../src/store/cityInfoList-reducer';
 
 import CityCard from "../CityCard/CityCard";
 import axios from "axios";
 import { connect } from "react-redux";
-import {setCityInfoList} from '../../src/store/cityInfoList-reducer'
+
+// import {removeActiveCity} from '../../src/store/cityList-reducer';
 
 const CardsContainer = (props: any) => {
-  const [citiesInfo, setCitiesInfo] = useState(loadState());
-
-  // useEffect(() => {
-  //   function checkCitiesData() {
-  //     const item = loadState();
-  //     console.log('1111')
-  //     if (item) {
-  //       setCitiesInfo(item);
-  //     }
-  //   }
-
-  //   window.addEventListener("Storage", checkCitiesData);
-
-  //   return () => {
-  //     window.removeEventListener("storage", checkCitiesData);
-  //   };
-  // }, []);
-
   const handleDeleteButton = (value: string) => {
-    const countriesInfo = loadState();
-    const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
-    const index = cityNames.indexOf(value);
-
-    if (index > -1) {
-      cityNames.splice(index, 1);
-      countriesInfo.splice(index, 1);
-    }
-    
-    console.log(window.localStorage)
-    // setCitiesInfo(countriesInfo);
-    saveState(countriesInfo);
-    saveState(cityNames,LOCAL_STORAGE_NAME_CITY);
-    console.log(window.localStorage)
+    props.removeActiveCity(value);
+    props.removeCityFromInfoList(value);
   };
 
   const handleUpdateButton = (value: string) => {
@@ -55,7 +27,7 @@ const CardsContainer = (props: any) => {
         
         countriesInfo.splice(index, 1, response.data);
         saveState(countriesInfo);
-        setCitiesInfo(countriesInfo);
+        // setCitiesInfo(countriesInfo);
     })
     .catch((er) => {
     });
@@ -76,16 +48,18 @@ const CardsContainer = (props: any) => {
 };
 
 let mapStateToProps = (state: {
-  cityList: { cityList: any};
-  cityInfoList: { cityInfoList: any};
+  // cityList: { cityList: any};
+  cityInfoList: { cityInfoList: any, cityList: any};
 }) => {
   return {
     cityInfoList: state.cityInfoList.cityInfoList,
-    cityList: state.cityList.cityList
+    cityList: state.cityInfoList.cityList
   };
 };
 
 export default connect(mapStateToProps, {
-  setCityInfoList
+  setCityInfoList,
+  removeActiveCity,
+  removeCityFromInfoList
 })(CardsContainer);
 

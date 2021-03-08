@@ -1,53 +1,41 @@
-import './SearchForm.scss';
+import "./SearchForm.scss";
 
 import {
   AUTOCOMPLETE_API,
   WEATHER_API,
   WEATHER_API_KEY,
-} from "../api-keys/WeatherApiKey";
-import { LOCAL_STORAGE_NAME_CITY, loadState, saveState } from "../utils";
+} from "../api/api-keys/WeatherApiKey";
+// import { LOCAL_STORAGE_NAME_CITY, loadState, saveState } from "../utils";
 import React, { useState } from "react";
+import { addCity, addCityToInfoList, getCityWeather, updateAllCitiesInfo } from "../../src/store/cityInfoList-reducer";
 
-import {addCity} from '../../src/store/cityList-reducer';
-import {addCityToInfoList} from '../../src/store/cityInfoList-reducer'
+// import { addCity } from "../../src/store/cityList-reducer";
 import axios from "axios";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
-const SearchForm = (props:any) => {
+const SearchForm = (props: any) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [autoCompleteArray, setAutoCompleteArray] = useState([]);
 
-  const checkIfLocalStorageEmpty = () => {
-    const countriesInfo = loadState();
-    const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
-
-    if (!countriesInfo) {
-      saveState([]);
-    }
-
-    if (!cityNames) {
-      saveState([], LOCAL_STORAGE_NAME_CITY);
-    }
-  };
-
   const updateAllCitiesWeather = () => {
-    const urlArray: any[] = [];
-    const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
+    const urlArray: string[] = [];
+    const cityNames = props.cityList;
 
-    for(let name of cityNames) {
-      urlArray.push(`${WEATHER_API}${name}&appid=${WEATHER_API_KEY}&units=metric`);
+    for (let name of cityNames) {
+      urlArray.push(
+        `${WEATHER_API}${name}&appid=${WEATHER_API_KEY}&units=metric`
+      );
     }
 
-    let promiseArray = urlArray.map(url => axios.get(url));
+    let promiseArray = urlArray.map((url) => axios.get(url));
 
-    axios.all(promiseArray)
-    .then(results => {
-      let temp = results.map(r => r.data);
-      saveState(temp);
+    axios.all(promiseArray).then((results) => {
+      let temp = results.map((r) => r.data);
+      props.updateAllCitiesInfo(temp);
       console.log("TEMP", temp);
-    })
-  }
+    });
+  };
 
   const getAutocompleteCity = (value: string) => {
     axios
@@ -76,44 +64,48 @@ const SearchForm = (props:any) => {
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     getWeatherFromApi(searchTerm);
+    setSearchTerm("");
+    setAutoCompleteArray([]);
   };
 
-const getWeatherFromApi = (value: string) => {
-  axios
-  .get(`${WEATHER_API}${value}&appid=${WEATHER_API_KEY}&units=metric`)
-  .then((response) => {
-    checkIfLocalStorageEmpty();
-    const isCountryExistInTracking = checkIsCountryExistInTracking(
-      response.data.name
-    );
-    if (!isCountryExistInTracking) {
-      // const countriesInfo = loadState();
-      // const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
-      // saveState(
-      //   [...cityNames, response.data.name],
-      //   LOCAL_STORAGE_NAME_CITY
-      // );
-      // saveState([...countriesInfo, response.data]);
-      props.addCity(response.data.name);
-      props.addCityToInfoList(response.data);
-    }
-  })
-  .catch((er) => {
-    setErrorMessage(er.message);
-  });
-}
+  const getWeatherFromApi = (value: string) => {
+    axios
+      .get(`${WEATHER_API}${value}&appid=${WEATHER_API_KEY}&units=metric`)
+      .then((response) => {
+        const isCityExistInTracking = checkIsCityExistInTracking(
+          response.data.name
+        );
+        if (!isCityExistInTracking) {
+          props.addCity(response.data.name);
+          props.addCityToInfoList(response.data);
+        }
+      })
+      .catch((er) => {
+        setErrorMessage(er.message);
+      });
+  };
 
-  const checkIsCountryExistInTracking = (cityName: string) => {
-    const cityNames = loadState(LOCAL_STORAGE_NAME_CITY);
-    return cityNames.includes(cityName);
+  const checkIsCityExistInTracking = (cityName: string) => {
+    return props.cityList.includes(cityName);
   };
 
   const handleAutoCompleteClick = (value: string) => {
-    const searchCity = value.split(',')[0];
-    setSearchTerm('');
+    const searchCity = value.split(",")[0];
+    setSearchTerm("");
     setAutoCompleteArray([]);
 
     getWeatherFromApi(searchCity);
+    // const isCityExistInTracking = checkIsCityExistInTracking(
+    //   searchCity
+    // );
+    // if (!isCityExistInTracking) {
+    //   props.getCityWeather(searchCity);
+    //   props.addCity(searchCity);
+    // }
+  };
+
+  const hahdleGandle = () => {
+    props.getCityWeather('minsk');
   }
 
   return (
@@ -133,30 +125,36 @@ const getWeatherFromApi = (value: string) => {
             <div className="autocomplete__fields">
               {autoCompleteArray.length > 0 &&
                 autoCompleteArray.map((city: any) => {
-                  return <div onClick={() => handleAutoCompleteClick(city)}>{city}</div>;
+                  return (
+                    <div onClick={() => handleAutoCompleteClick(city)}>
+                      {city}
+                    </div>
+                  );
                 })}
             </div>
           </label>
         </div>
       </form>
       <button onClick={updateAllCitiesWeather}>UpdateAll</button>
+      <button onClick={hahdleGandle}>MM</button>
       <div className="error-message">{errorMessage}</div>
     </div>
   );
 };
 
 let mapStateToProps = (state: {
-  cityList: {  cityList: any};
-  cityInfoList: {cityInfoList: any,}
+  // cityList: { cityList: any };
+  cityInfoList: { cityInfoList: any,cityList: any };
 }) => {
   return {
     cityInfoList: state.cityInfoList.cityInfoList,
-    cityList: state.cityList.cityList
+    cityList: state.cityInfoList.cityList,
   };
 };
 
 export default connect(mapStateToProps, {
   addCity,
-  addCityToInfoList
+  addCityToInfoList,
+  getCityWeather,
+  updateAllCitiesInfo,
 })(SearchForm);
-

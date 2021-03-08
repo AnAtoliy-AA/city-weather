@@ -1,20 +1,24 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
 
 import cityInfoListReducer from "./cityInfoList-reducer";
-import cityListReducer from './cityList-reducer'
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunkMiddleware from 'redux-thunk';
 
+// import cityListReducer from './cityList-reducer'
+
+
+
 let reducers = combineReducers({
-    cityList: cityListReducer,
+    // cityList: cityListReducer,
     cityInfoList: cityInfoListReducer,
 })
 
 let initialState = {
-   cityList: {
-    cityList: []
-   },
+//    cityList: {
+//     cityList: []
+//    },
    cityInfoList: {
+    cityList: [],
     cityInfoList: []
    }
 }

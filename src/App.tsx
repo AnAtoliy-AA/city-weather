@@ -4,7 +4,6 @@ import CardsContainer from "./CardsContainer/CardsContainer";
 import { Provider } from "react-redux";
 import React from "react";
 import SearchForm from "./SearchForm/SearchForm";
-import axios from "axios";
 import store from "./store/store";
 
 function App() {
