@@ -13,7 +13,10 @@ const CityCard = (props: any) => {
       <p>
         {WORDS_CONFIG.TEMPERATURE}: {props.city.main.temp}
         {WORDS_CONFIG.CELSIUS}
-        <img src={`http://openweathermap.org/img/w/${props.city.weather[0].icon}.png`} alt=""/>
+        <img
+          src={`http://openweathermap.org/img/w/${props.city.weather[0].icon}.png`}
+          alt=""
+        />
       </p>
       <p>
         {WORDS_CONFIG.HUMIDITY}: {props.city.main.humidity} %
@@ -37,7 +40,7 @@ const CityCard = (props: any) => {
         </button>
       </div>
       <div>
-        {WORDS_CONFIG.LAST_UPDATE}  
+        {WORDS_CONFIG.LAST_UPDATE}
         <Moment unix format="D MMMM YYYY HH:MM:SS">
           {props.city.dt}
         </Moment>

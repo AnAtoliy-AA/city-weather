@@ -16,18 +16,43 @@ import { WORDS_CONFIG } from "../shared/wordsConfig";
 import { connect } from "react-redux";
 
 const MIN_SEARCH_VALUE = 2;
+const UPDATE_CITY_INFO_PERIOD_IN_MS = {
+  TEN_SECONDS: 10000,
+  THIRTY_SECONDS: 30000,
+  ONE_MINUTE: 60000,
+  FIVE_MINUTES: 300000,
+  TEN_MINUSTES: 600000,
+};
+
+const UPDATE_CITY_INFO_PERIOD = {
+  TEN_SECONDS: 10,
+  THIRTY_SECONDS: 30,
+  ONE_MINUTE: 1,
+  FIVE_MINUTES: 5,
+  TEN_MINUSTES: 10,
+};
 
 const SearchForm = (props: any) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [checked, setChecked] = useState(false);
+  const [updatingPeriod, setUpdatingPeriod] = useState(
+    UPDATE_CITY_INFO_PERIOD_IN_MS.TEN_SECONDS
+  );
+
   const handleCheckBoxClick = () => setChecked(!checked);
+
+  const handleUpdatePeriodChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setUpdatingPeriod(+e.target.value);
+  };
 
   useEffect(() => {
     let interval: number | undefined;
 
     interval = window.setInterval(() => {
       props.getAllCityWeather(props.cityList);
-    }, 10000);
+    }, updatingPeriod);
 
     if (!checked) {
       clearInterval(interval);
@@ -36,7 +61,7 @@ const SearchForm = (props: any) => {
     return () => {
       window.clearInterval(interval);
     };
-  }, [props, props.cityList,checked]);
+  }, [props, props.cityList, checked, updatingPeriod]);
 
   const getAutocompleteCity = (value: string) => {
     props.getAutocompleteCitiesNames(value);
@@ -52,9 +77,9 @@ const SearchForm = (props: any) => {
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    props.getCityWeather(searchTerm);
     setSearchTerm("");
     props.clearAutocompleteCitiesNames();
+    props.getCityWeather(searchTerm);
   };
 
   const handleAutoCompleteClick = (value: string) => {
@@ -92,8 +117,33 @@ const SearchForm = (props: any) => {
       </form>
       <div className="autoupdate__togler">
         {WORDS_CONFIG.AUTO_UPDATE}
-        <input onClick={handleCheckBoxClick} checked={checked} type="checkbox"/>
+        <input
+          onClick={handleCheckBoxClick}
+          checked={checked}
+          type="checkbox"
+        />
       </div>
+      <select
+        onChange={(e) => handleUpdatePeriodChange(e)}
+        className="browser-default custom-select"
+      >
+        <option value={UPDATE_CITY_INFO_PERIOD_IN_MS.TEN_SECONDS}>
+          {UPDATE_CITY_INFO_PERIOD.TEN_SECONDS} {WORDS_CONFIG.SECONDS}
+        </option>
+        <option value={UPDATE_CITY_INFO_PERIOD_IN_MS.THIRTY_SECONDS}>
+          {UPDATE_CITY_INFO_PERIOD.THIRTY_SECONDS} {WORDS_CONFIG.SECONDS}
+        </option>
+        <option value={UPDATE_CITY_INFO_PERIOD_IN_MS.ONE_MINUTE}>
+          {UPDATE_CITY_INFO_PERIOD.ONE_MINUTE} {WORDS_CONFIG.MINUTES}
+        </option>
+        <option value={UPDATE_CITY_INFO_PERIOD_IN_MS.FIVE_MINUTES}>
+          {UPDATE_CITY_INFO_PERIOD.FIVE_MINUTES} {WORDS_CONFIG.MINUTES}
+        </option>
+        <option value={UPDATE_CITY_INFO_PERIOD_IN_MS.TEN_MINUSTES}>
+          {UPDATE_CITY_INFO_PERIOD.FIVE_MINUTES} {WORDS_CONFIG.MINUTES}
+        </option>
+      </select>
+      )
     </div>
   );
 };

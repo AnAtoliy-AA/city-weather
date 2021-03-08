@@ -1,4 +1,4 @@
-import { autocompleteApi } from '../api/autoCompleteApi';
+import { autocompleteApi } from "../api/autoCompleteApi";
 
 const ACTION_CONST = {
   SET_AUTOCOMPLETE_CITIES_INFO: "SET_AUTOCOMPLETE_CITIES_INFO",
@@ -6,10 +6,13 @@ const ACTION_CONST = {
 };
 
 let initialState = {
-    autoCompleteInfo : [],
+  autoCompleteInfo: [],
 };
 
-const autoCompleteReducer = (state = initialState, action: { type: string; citiesNames: string[] }) => {
+const autoCompleteReducer = (
+  state = initialState,
+  action: { type: string; citiesNames: string[] }
+) => {
   switch (action.type) {
     case ACTION_CONST.SET_AUTOCOMPLETE_CITIES_INFO: {
       return { ...state, autoCompleteInfo: action.citiesNames };
@@ -28,10 +31,12 @@ export const setAutocompleteCitiesNames = (citiesNames: string[]) => ({
 });
 
 export const clearAutocompleteCitiesNames = () => ({
-    type: ACTION_CONST.CLEAR_AUTOCOMPLETE_CITIES_INFO,
-  });
+  type: ACTION_CONST.CLEAR_AUTOCOMPLETE_CITIES_INFO,
+});
 
-export const getAutocompleteCitiesNames = (cityName: string) => async (dispatch: any)=> {
+export const getAutocompleteCitiesNames = (cityName: string) => async (
+  dispatch: any
+) => {
   const response = await autocompleteApi.getAutocomplete(cityName);
 
   dispatch(setAutocompleteCitiesNames(response));

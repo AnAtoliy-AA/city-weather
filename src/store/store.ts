@@ -10,8 +10,7 @@ let reducers = combineReducers({
   cityInfoList: cityInfoListReducer,
 });
 
-let initialState = {
-};
+let initialState = {};
 
 let store = createStore(
   reducers,
