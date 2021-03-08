@@ -14,7 +14,7 @@ import {
 import { CityInfoType } from "../types";
 import { connect } from "react-redux";
 
-const MIN_SEACRCH_VALUE = 2;
+const MIN_SEARCH_VALUE = 2;
 
 const SearchForm = (props: any) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +30,7 @@ const SearchForm = (props: any) => {
   const handleOnInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     setSearchTerm(searchValue);
-    if (searchValue.length > MIN_SEACRCH_VALUE) {
+    if (searchValue.length > MIN_SEARCH_VALUE) {
       getAutocompleteCity(event.target.value);
     } else props.clearAutocompleteCitiesNames();
   };

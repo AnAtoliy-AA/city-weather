@@ -6,6 +6,7 @@ const ACTION_CONST = {
 };
 
 let initialState = {
+    autoCompleteInfo : [],
 };
 
 const autoCompleteReducer = (state = initialState, action: { type: string; citiesNames: string[] }) => {
