@@ -76,10 +76,10 @@ export const getCityWeather = (cityName: string) => async (dispatch: (arg0: { ty
 };
 
 
-export const updateCityWeather = (cityName: string) => async (
+export const updateCityWeather = (cityInfo: CityInfoType) => async (
   dispatch: (arg0: { type: string; cityInfo: CityInfoType; }) => void
 ) => {
-  const response = await weatherApi.getWeather(cityName);
+  const response = await weatherApi.getWeather(cityInfo.name);
 
   dispatch(updateCityInInfoList(response));
 };

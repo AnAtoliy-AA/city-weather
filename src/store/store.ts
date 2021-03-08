@@ -11,11 +11,6 @@ let reducers = combineReducers({
 });
 
 let initialState = {
-  autoComplete: {},
-  cityInfoList: {
-    cityList: [],
-    cityInfoList: [],
-  },
 };
 
 let store = createStore(
