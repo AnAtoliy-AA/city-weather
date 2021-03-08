@@ -1,0 +1,16 @@
+export const WORDS_CONFIG = {
+    CITY_WITH_MAX_TEMPERATURE: 'City with max temperature',
+    CITY_WITH_MIN_TEMPERATURE: 'City with min temperature',
+    SELECT_CITY: 'Select_city',
+    CITY: 'City',
+    TEMPERATURE: 'Temperature',
+    CELSIUS: '°C',
+    HUMIDITY: 'Humidity',
+    PRESSURE: 'Pressure',
+    WIND: 'Wind',
+    METERS_IN_SECOND: 'M/s',
+    DELETE: 'Delete',
+    UPDATE: 'Update',
+    LAST_UPDATE: 'Last update',
+    AUTO_UPDATE: 'Auto updating',
+}

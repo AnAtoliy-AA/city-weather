@@ -1,5 +1,18 @@
 .cards__container {
     display: flex;
     flex-wrap: wrap;
+    width: 100vw;
     justify-content: space-around;
+    // align-items: center;
+}
+
+.container__info {
+    display: flex;
+    justify-content: center;
+    margin: 2vh 0;
+}
+
+.info__card {
+    display: flex;
+    margin: 0 2vw;
 }

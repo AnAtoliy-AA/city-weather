@@ -1,4 +1,18 @@
 .city__card {
     display: flex;
     flex-direction: column;
+    border: 1px solid #000;
+    border-radius: 1em;
+    margin: 1vh 1vw;
+    padding: 1vh 1vw;
+}
+
+.card__wind {
+    display: flex;
+    justify-content: space-around;
+}
+
+.card__controls {
+    display: flex;
+    justify-content: space-around;
 }

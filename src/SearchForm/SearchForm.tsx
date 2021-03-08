@@ -12,12 +12,15 @@ import {
 } from "../../src/store/autoComplete-reducer";
 
 import { CityInfoType } from "../types";
+import { WORDS_CONFIG } from "../shared/wordsConfig";
 import { connect } from "react-redux";
 
 const MIN_SEARCH_VALUE = 2;
 
 const SearchForm = (props: any) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [checked, setChecked] = useState(false);
+  const handleCheckBoxClick = () => setChecked(!checked);
 
   useEffect(() => {
     let interval: number | undefined;
@@ -26,14 +29,14 @@ const SearchForm = (props: any) => {
       props.getAllCityWeather(props.cityList);
     }, 10000);
 
+    if (!checked) {
+      clearInterval(interval);
+    }
+
     return () => {
       window.clearInterval(interval);
     };
-  }, [props, props.cityList]);
-
-  const updateAllCitiesWeather = () => {
-    props.getAllCityWeather(props.cityList);
-  };
+  }, [props, props.cityList,checked]);
 
   const getAutocompleteCity = (value: string) => {
     props.getAutocompleteCitiesNames(value);
@@ -69,7 +72,7 @@ const SearchForm = (props: any) => {
             <input
               type="text"
               name="login"
-              placeholder="Select city"
+              placeholder={WORDS_CONFIG.SELECT_CITY}
               value={searchTerm}
               autoComplete="off"
               onChange={handleOnInputChange}
@@ -87,7 +90,10 @@ const SearchForm = (props: any) => {
           </label>
         </div>
       </form>
-      <button onClick={updateAllCitiesWeather}>UpdateAll</button>
+      <div className="autoupdate__togler">
+        {WORDS_CONFIG.AUTO_UPDATE}
+        <input onClick={handleCheckBoxClick} checked={checked} type="checkbox"/>
+      </div>
     </div>
   );
 };
